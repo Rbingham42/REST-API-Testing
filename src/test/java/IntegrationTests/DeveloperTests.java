@@ -18,7 +18,7 @@ public class DeveloperTests {
 
     @BeforeSuite
     public void setup(){
-        developer = new Developer("","","",0);
+        developer = new Developer("","","",0);//update me
     }
 
     @Test
@@ -35,7 +35,7 @@ public class DeveloperTests {
 
         developer = response.getBody().as(Developer.class);
         assertEquals(response.statusCode(),200);
-        assertEquals(developer.getFirstName(),"");
+        assertEquals(developer.getFirstName(),"");//update me
         assertNotNull(developer.getId());
 
     }

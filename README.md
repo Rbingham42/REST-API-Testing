@@ -1,52 +1,80 @@
-# TDD with JUnit and Spring
+# REST Testing with Rest-Assured
 
 ## Objectives
 
-* Implement TDD techniques with JUnit to implement classes in a Spring Boot app.
+* Write TestNG tests to exercise and validate REST Endpoints using the Rest-Assured library
 
 ## Instructions
 
-Write the first unit test in SongTest.Java:
+A live API that manages Developer entities exists at https://tech-services-1000201953.uc.r.appspot.com/.  The 
+Developer entity has the following shape:
 
-```JAVA
-public class SongTest {
-    @Test
-    public void getPrettyDurationTest() {
-        Song mySong = new Song("Title","Artist",Duration.ofSeconds(205));
-        String prettyResult = mySong.getDurationPretty();
-        String expectedResult = String.format("%d:%02d:%02d", 0,3,25);
-        assertEquals(expectedResult,prettyResult,"getDurationPretty should convert a song's duration in seconds" +
-                " into the format HH:mm:ss");
-    }
+```Java
+public class Developer {
+
+    String id; //MongoDB 
+    String firstName;
+    String lastName;
+    String favoriteLanguage;
+    int yearStarted;
 }
 ```
 
-Complete the method implementation in the Playlist class by implementing TDD in the PlaylistTest class to satisfy the 
+###Endpoints
+
+* GET /developers           : Returns all developers
+* GET /developer/{id}       : Returns developer with specified id
+* POST /developer           : Posts developer entity from request body
+* PUT /developer            : Updates developer entity from request body
+* DELETE /developer/{id}    : Deletes developer with specified id
+
+The first POST test has been partially written for you:
+
+```JAVA
+public class DeveloperTests {
+
+    Developer developer;
+    String baseURL = "https://tech-services-1000201953.uc.r.appspot.com/";
+
+    @BeforeSuite
+    public void setup(){
+        developer = new Developer("","","",0);//update me
+    }
+
+    @Test
+    public void postDeveloper_postsDeveloper() throws IOException {
+        // create a client
+        Response response =  given()
+                .header("Content-type", "application/json")
+                .and()
+                .body(developer)
+                .when()
+                .post(baseURL+"developer")
+                .then()
+                .extract().response();
+
+        developer = response.getBody().as(Developer.class);
+        assertEquals(response.statusCode(),200);
+        assertEquals(developer.getFirstName(),"");//update me
+        assertNotNull(developer.getId());
+
+    }
+
+}
+```
+
+Complete the DeveloperTests class to satisfy the 
 below criteria:
 
-1.  Given I have a playlist, 
-    When I add a song to the playlist, 
-    Then it will appear in my Playlist.
-2.  Given I have a playlist,
-    When I remove a song in my playlist,
-    Then it no longer appears in my playlist.
-3.  Given I have a playlist,
-    When I move a song in the playlist order,
-    Then the playlist will have a new order.
-4.  Given I have a playlist,
-    When I look at the playlist duration,
-    Then it shows me the total length of my playlist in HH:mm::ss format.
-5.  Given I have a playlist,
-    When I look at the playlist,
-    Then I see the songs in "Title - Artist HH:mm:ss\n" format.
-        For example:
-        
-        2 Heads - Coleman Hell 3:32
-        
-        Lightning Crashes - Live 5:25
-        
-        Stars - Hum 5:09
+1.  Update the new Developer Object with your developer info and update the first name assertion.
+2.  Verify that the GET all developers endpoint returns an array of developers.
+3.  Verify that the GET developer by id endpoint returns the expected developer.
+4.  Verify that the PUT endpoint updates a developer.
+5.  Verify that the DELETE endpoint deletes the developer.  Verify HttpStatus.OK and attempt to retrieve the deleted 
+    developer and verify that it returns null.
 
-#### JUnit 5 Guides
-* [Official JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)
-* [JUnit 5 Annotations](https://devqa.io/junit-5-annotations/)
+
+#### Rest-Assured Guides
+* [Rest Assured IO](https://rest-assured.io/)
+* [DevQA rest-assured examples](https://devqa.io/rest-assured-api-requests-examples/)
+* [Toolsqa Read json response body](https://www.toolsqa.com/rest-assured/read-json-response-body-using-rest-assured/)
